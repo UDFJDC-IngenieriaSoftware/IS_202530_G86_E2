@@ -14,26 +14,17 @@ export class ImagesController {
   @Post('sendPhoto')
   @UseInterceptors(FileInterceptor('file',{
     fileFilter: FileFilter,
-    storage: diskStorage({
-      destination: './static/images',
-      filename: FileNamer
-    })
+    // Uncomment below to save files to disk
+    // storage: diskStorage({ 
+    //   destination: './static/images',
+    //   filename: FileNamer
+    // })
   }))
   postPhoto(
     @UploadedFile() file: Express.Multer.File
   ){
-    return this.imagesService.getJson(file.filename)
+    return this.imagesService.getJsonWithBuffer(file.buffer)
   }
-  
-  // @Get('getImage/:imageId')
-  // getImage(
-  //   @Res() res: Response,
-  //   @Param('imageId') imageId: string
-  // ){
-  //   const path = this.imagesService.getImage(imageId);
-  //   res.sendFile(path);
-  //   return path
-  // }
 
   
 
