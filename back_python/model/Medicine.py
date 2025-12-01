@@ -1,4 +1,3 @@
-
 class Medicine:
 
     def __init__(self, id_medicine, name, dose, frequency, route_of_administration, observations):
@@ -11,5 +10,15 @@ class Medicine:
         self.reminders = []
 
     def add_reminder(self, reminder):
-        self.reminders.append(reminder)    
-    
+        self.reminders.append(reminder)
+
+    def to_dict(self):
+        return {
+            "id_medicine": self.id_medicine,
+            "name": self.name,
+            "dose": self.dose,
+            "frequency": self.frequency,
+            "route_of_administration": self.route_of_administration,
+            "observations": self.observations,
+            "reminders": self.reminders
+        }
