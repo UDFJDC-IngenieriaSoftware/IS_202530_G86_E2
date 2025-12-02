@@ -7,6 +7,7 @@ import { OcrModule } from 'src/ocr/ocr.module';
 @Module({
   controllers: [ImagesController],
   providers: [ImagesService],
-  imports: [GeminiModule]
+  imports: [GeminiModule],
+  exports: [ImagesService]
 })
 export class ImagesModule {}

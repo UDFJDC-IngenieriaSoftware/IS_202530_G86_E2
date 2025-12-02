@@ -3,13 +3,15 @@ import { WhatsappService } from './whatsapp.service';
 import { WhatsappController } from './whatsapp.controller';
 import { CommonModule } from 'src/common/common.module';
 import { ConfigModule } from '@nestjs/config';
+import { ImagesModule } from 'src/images/images.module';
 
 @Module({
   controllers: [WhatsappController],
   providers: [WhatsappService],
   imports: [
     CommonModule,
-    ConfigModule
+    ConfigModule,
+    ImagesModule
   ]
 })
 export class WhatsappModule {}
