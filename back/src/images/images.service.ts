@@ -14,6 +14,11 @@ export class ImagesService {
 
     async getTextToSend(buffer: Buffer) {
         const jsonResponse =  await this.geminiService.getJsonFromDataImageBuffer(buffer);
+        console.log(jsonResponse)
+        if(jsonResponse.status){
+            let text = `${jsonResponse.message}`
+            return text;
+        }
         let text = `*📄 Resultado de la receta médica OCR*\n\n`;
 
         text += `*Paciente*\n${jsonResponse.paciente.nombre}\n${jsonResponse.paciente.identificacion}\n\n`;

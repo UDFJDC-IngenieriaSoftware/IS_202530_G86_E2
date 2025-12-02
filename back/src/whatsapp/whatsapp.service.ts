@@ -43,9 +43,9 @@ export class WhatsappService {
 
     async getImage(body: WhatsappResponse){
         // Validar estructura mínima
-            const entry = body.entry?.[0];
-            const change = entry?.changes?.[0];
-            const value = change?.value;
+        const entry = body.entry?.[0];
+        const change = entry?.changes?.[0];
+        const value = change?.value;
 
         if (!value?.messages || value.messages.length === 0) {
                 console.log("No hay mensajes en este webhook. Posiblemente es un status, ack o evento distinto.");
@@ -64,7 +64,6 @@ export class WhatsappService {
                 console.log("No se encontró el número del usuario");
                 return;
             }
-
         //Contruir url para obtener la url de la imagen
         let url = `https://graph.facebook.com/v22.0/${data.image.id}`
         const imageUrl: ImageUrlInfo = await this.http.get(url, this.headersData)
@@ -80,8 +79,8 @@ export class WhatsappService {
         });
         const buffer: Buffer = response.data
         const textToSend = await this.ImageService.getTextToSend(buffer);
-
         const result = await this.sendMessage(phoneNumber, textToSend);
         console.log(result);
+        return 0;
     }
 }

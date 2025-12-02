@@ -53,6 +53,13 @@ export class GeminiService {
             - Interpreta abreviaturas médicas (mg, ml, VO, c/8h, etc.).
             - No inventes información.
             - Devuelve solo el JSON.
+            - Intenta ayudar en un 10% si la informacion es confusa (Nombres de medicamentos, dosis y notas)
+            - Si no hay un 50% de la informacion o mas entregar un JSON con la siguiente estructura:
+            {
+                status: ""
+                message: ""
+            }
+            Con el mensaje y estado que consideres correspondiente a la situacion
 
             Texto OCR detectado:
             """${imageText.text}"""
@@ -63,6 +70,7 @@ export class GeminiService {
             });
             const text: string = result.candidates[0].content.parts[0].text;
             const dataJson = JSON.parse(text.replace(/```json/gi, '').replace(/```/g, '').trim());
+            console.log(dataJson);
             return dataJson;
         }
 
