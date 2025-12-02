@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AxiosAdapter } from 'src/common/adapters/axios.adapter';
 import { TextPayloadInterface } from './interfaces.ts/textPayload.interface';
-import { Message, WhatsappResponse } from './interfaces.ts/WsResponse.interface';
+import { ImageUrlInfo, Message, WhatsappResponse } from './interfaces.ts/WsResponse.interface';
 import { options } from 'src/common/interfaces.ts/HttpAdapter.interface';
 
 
@@ -45,12 +45,10 @@ export class WhatsappService {
 
         //Contruir url para obtener la url de la imagen
         let url = `https://graph.facebook.com/v22.0/${data.image.id}`
-        const imageUrl = await this.http.get(url, this.headersData)
-        console.log(imageUrl);
-        // const data: WhatsappResponse = JSON.stringify(body, null, 2);
-        // console.log(data)
+        const imageUrl: ImageUrlInfo = await this.http.get(url, this.headersData)
 
-        // const imageUrl = await this.http.get('')
+        
+        url = imageUrl.url
 
     }
 
