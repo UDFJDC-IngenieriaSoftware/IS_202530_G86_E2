@@ -19,4 +19,18 @@ class Patient:
     def add_treatment(self, treatment):
         self.treatments.append(treatment)
 
-        
+    def to_dict(self):
+
+        return {
+           "cedula":self.cedula,
+           "name":self.name,
+           "second_name":self.second_name,
+           "first_lastname":self.first_lastname,
+           "second_lastname":self.second_lastname,
+           "phone":self.phone,
+           "date_of_birth":self.date_of_birth,
+           "carers": self.carers,
+           "treatments":self.treatments
+
+
+        }    
