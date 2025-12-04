@@ -11,4 +11,16 @@ class Treatment:
         self.medicines = []
 
     def add_medicine(self, medicine):
-        self.medicines.append(medicine)    
+        self.medicines.append(medicine)   
+
+    def to_dict(self):
+
+        return {
+            "id_treatment":self.id_treatment,
+            "name": self.name,
+            "especialty": self.especialty,
+            "end_date": self.end_date,
+            "start_date": self.start_date
+
+
+        }  
