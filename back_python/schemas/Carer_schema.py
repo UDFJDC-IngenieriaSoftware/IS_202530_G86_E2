@@ -19,6 +19,6 @@ class CarerResponse(BaseModel):
     second_lastname: str
     phone: str
 
-    class Config:
-        orm_mode = True
-
+    model_config = {
+        "from_attributes": True
+    }
