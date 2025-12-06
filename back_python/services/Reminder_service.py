@@ -1,40 +1,55 @@
+from sqlalchemy.orm import Session
 from model.Reminder import Reminder
+from schemas.Reminder_schema import ReminderCreate
 
-reminders_db = []
-current_id = 1
 
-def create_reminder(data):
-    global current_id
+def create_reminder(db: Session, data: ReminderCreate):
     reminder = Reminder(
-        id_reminder=current_id,
-        estado_envio=data.estado_envio,
-        answer_patient=data.answer_patient,
-        date_answer=data.date_answer,
-        date_reminder=data.date_reminder
+        idMedicamento=data.idMedicamento,
+        idTratamiento=data.idTratamiento,
+        estadoEnvio=data.estadoEnvio,
+        respuestaPaciente=data.respuestaPaciente,
+        fechaEnvioRecordatorio=data.fechaEnvioRecordatorio,
+        fechaRespuesta=data.fechaRespuesta,
+        notas=data.notas
     )
-    reminders_db.append(reminder)
-    current_id += 1
+    db.add(reminder)
+    db.commit()
+    db.refresh(reminder)
     return reminder
 
-def get_all_reminders():
-    return reminders_db
 
-def get_reminder_by_id(reminder_id):
-    for r in reminders_db:
-        if r.id_reminder == reminder_id:
-            return r
-    return None
+def get_all_reminders(db: Session):
+    return db.query(Reminder).all()
 
-def update_reminder(reminder_id, data):
-    reminder = get_reminder_by_id(reminder_id)
-    if reminder:
-        reminder.estado_envio = data.estado_envio
-        reminder.answer_patient = data.answer_patient
-        reminder.date_answer = data.date_answer
-        reminder.date_reminder = data.date_reminder
+
+def get_reminder_by_id(db: Session, reminder_id: int):
+    return db.query(Reminder).filter(Reminder.idRecordatorio == reminder_id).first()
+
+
+def update_reminder(db: Session, reminder_id: int, data: ReminderCreate):
+    reminder = get_reminder_by_id(db, reminder_id)
+
+    if not reminder:
+        return None
+
+    reminder.idMedicamento = data.idMedicamento
+    reminder.idTratamiento = data.idTratamiento
+    reminder.estadoEnvio = data.estadoEnvio
+    reminder.respuestaPaciente = data.respuestaPaciente
+    reminder.fechaEnvioRecordatorio = data.fechaEnvioRecordatorio
+    reminder.fechaRespuesta = data.fechaRespuesta
+    reminder.notas = data.notas
+
+    db.commit()
+    db.refresh(reminder)
     return reminder
 
-def delete_reminder(reminder_id):
-    global reminders_db
-    reminders_db = [r for r in reminders_db if r.id_reminder != reminder_id]
+
+def delete_reminder(db: Session, reminder_id: int):
+    reminder = get_reminder_by_id(db, reminder_id)
+    if not reminder:
+        return None
+    db.delete(reminder)
+    db.commit()
     return True

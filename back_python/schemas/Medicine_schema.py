@@ -1,19 +1,14 @@
 from pydantic import BaseModel
 
-class MedicineCreate(BaseModel):
-    name: str
-    dose: str
-    frequency: str
-    route_of_administration: str
-    observations: str | None = None
+class MedicineBase(BaseModel):
+    nombreMedicamento: str
+    observaciones: str | None = None
 
-class MedicineResponse(BaseModel):
-    id_medicine: int
-    name: str
-    dose: str
-    frequency: str
-    route_of_administration: str
-    observations: str | None = None
+class MedicineCreate(MedicineBase):
+    pass
+
+class MedicineResponse(MedicineBase):
+    idMedicamento: int
 
     class Config:
         orm_mode = True

@@ -1,24 +1,16 @@
-class Medicine:
+from sqlalchemy import Column, Integer, String
+from config.database import Base
 
-    def __init__(self, id_medicine, name, dose, frequency, route_of_administration, observations):
-        self.id_medicine = id_medicine
-        self.name = name
-        self.dose = dose
-        self.frequency = frequency
-        self.route_of_administration = route_of_administration
-        self.observations = observations
-        self.reminders = []
+class Medicine(Base):
+    __tablename__ = "medicamento"
 
-    def add_reminder(self, reminder):
-        self.reminders.append(reminder)
+    idMedicamento = Column(Integer, primary_key=True, autoincrement=True)
+    nombreMedicamento = Column(String(100), nullable=False)
+    observaciones = Column(String(200), nullable=True)
 
     def to_dict(self):
         return {
-            "id_medicine": self.id_medicine,
-            "name": self.name,
-            "dose": self.dose,
-            "frequency": self.frequency,
-            "route_of_administration": self.route_of_administration,
-            "observations": self.observations,
-            "reminders": self.reminders
+            "idMedicamento": self.idMedicamento,
+            "nombreMedicamento": self.nombreMedicamento,
+            "observaciones": self.observaciones
         }

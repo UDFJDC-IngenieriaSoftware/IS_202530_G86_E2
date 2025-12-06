@@ -1,4 +1,7 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+from config.database import get_db
+
 from schemas.Reminder_schema import ReminderCreate, ReminderResponse
 from services.Reminder_service import (
     create_reminder,
@@ -10,30 +13,36 @@ from services.Reminder_service import (
 
 router = APIRouter(prefix="/reminders", tags=["Reminders"])
 
+
 @router.post("/", response_model=ReminderResponse)
-def create(data: ReminderCreate):
-    reminder = create_reminder(data)
-    return reminder.to_dict()
+def create(data: ReminderCreate, db: Session = Depends(get_db)):
+    return create_reminder(db, data)
+
 
 @router.get("/", response_model=list[ReminderResponse])
-def list_all():
-    return [r.to_dict() for r in get_all_reminders()]
+def list_all(db: Session = Depends(get_db)):
+    return get_all_reminders(db)
+
 
 @router.get("/{reminder_id}", response_model=ReminderResponse)
-def get(reminder_id: int):
-    reminder = get_reminder_by_id(reminder_id)
+def get(reminder_id: int, db: Session = Depends(get_db)):
+    reminder = get_reminder_by_id(db, reminder_id)
     if not reminder:
         raise HTTPException(404, "Reminder not found")
-    return reminder.to_dict()
+    return reminder
+
 
 @router.put("/{reminder_id}", response_model=ReminderResponse)
-def update(reminder_id: int, data: ReminderCreate):
-    reminder = update_reminder(reminder_id, data)
+def update(reminder_id: int, data: ReminderCreate, db: Session = Depends(get_db)):
+    reminder = update_reminder(db, reminder_id, data)
     if not reminder:
         raise HTTPException(404, "Reminder not found")
-    return reminder.to_dict()
+    return reminder
+
 
 @router.delete("/{reminder_id}")
-def delete(reminder_id: int):
-    delete_reminder(reminder_id)
+def delete(reminder_id: int, db: Session = Depends(get_db)):
+    ok = delete_reminder(db, reminder_id)
+    if not ok:
+        raise HTTPException(404, "Reminder not found")
     return {"message": "Reminder deleted"}
