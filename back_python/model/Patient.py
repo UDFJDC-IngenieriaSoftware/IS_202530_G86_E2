@@ -1,24 +1,30 @@
+from sqlalchemy import Date, Column, String, Integer, CheckConstraint
+from sqlalchemy.orm import declarative_base,relationship
+
+Base = declarative_base()
 
 
-class Patient:
-    def __init__(self, cedula, name, first_lastname, second_lastname, phone,date_of_birth):
-        self.cedula = cedula
-        self.name = name
-        self.second_name= ""
-        self.first_lastname = first_lastname
-        self.second_lastname = second_lastname
-        self.phone = phone
-        self.date_of_birth = date_of_birth
-        self.carers = []  
-        self.treatments = []
-        #como se debe tratar los cuidadores?
+class Patient(Base):
 
-    def add_carer(self, carer):
-        self.carers.append(carer)      
+    __tablename__='paciente'
+
+    cedula = Column('cedula',Integer,primary_key=True,index=True)
+    name = Column('primerNombre ',String,nullable=False)
+    second_name = Column('segundoNombre ',String,nullable=True)
+    first_lastname = Column('primerApellido ',String,nullable=False)
+    second_lastname = Column('segundoApellido ',String,nullable=True)
+    phone = Column('telefono ',Integer,nullable=False)
+    date_of_birth =Column('fechaNacimiento ',Date)
+
+    carers = relationship('Carer_Patient', back_populates="patients")
+
+    __table_args__=(
+        CheckConstraint('(fechaNacimiento  < CURRENT_DATE', name='check_fecha_nacimiento')
+
+    )
+
+
     
-    def add_treatment(self, treatment):
-        self.treatments.append(treatment)
-
     def to_dict(self):
 
         return {

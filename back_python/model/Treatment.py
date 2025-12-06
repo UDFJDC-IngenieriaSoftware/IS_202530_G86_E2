@@ -1,17 +1,28 @@
+from sqlalchemy import ForeignKey,Date, Column, String, Integer, CheckConstraint
+from sqlalchemy.orm import declarative_base,relationship
+
+Base = declarative_base()
 
 
-class Treatment:
+class Treatment(Base):
 
-    def __init__(self, id_treatment, name, especialty, end_date, start_date):
-        self.id_treatment = id_treatment
-        self.name = name
-        self.especialty = especialty
-        self.end_date = end_date
-        self.start_date = start_date
-        self.medicines = []
+    __tablename__='tratamiento'
 
-    def add_medicine(self, medicine):
-        self.medicines.append(medicine)   
+
+    id_treatment =Column('idTratamiento',Integer,primary_key=True,index=True,autoincrement=True)
+    cedulaPaciente = Column(Integer, ForeignKey('paciente.cedula'), nullable=False)
+    name = Column('nombreTratamiento',String,nullable=False)
+    especialty = Column('especialidad',String,nullable=False)
+    start_date =Column('fechaInicio',Date)
+    end_date = Column('fechaInicio',Date)
+
+    __table_args__ = (
+        CheckConstraint('fechaInicio < CURRENT_DATE', name='check_fecha_inicio'),
+        CheckConstraint('fechaFin > fechaInicio AND fechaFin <= CURRENT_DATE', name='check_fecha_fin'),
+    )
+    
+    patient = relationship("Patient", back_populates="treatments")
+
 
     def to_dict(self):
 
