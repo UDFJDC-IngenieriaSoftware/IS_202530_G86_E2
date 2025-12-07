@@ -1,4 +1,8 @@
+from fastapi import HTTPException
 from sqlalchemy.orm import Session
+from repositories.Medicine_repository import create_medicine, get_medicine_by_name, get_all_medicines, get_medicine_by_id, update_medicine, delete_medicine
+from schemas.Medicine_schema import MedicineCreate
+
 from repositories.Medicine_repository import (
     get_all_medicines,
     get_medicine_by_id,
@@ -21,3 +25,12 @@ def service_update(db: Session, medicine_id: int, data):
 
 def service_delete(db: Session, medicine_id: int):
     return delete_medicine(db, medicine_id)
+
+def service_create(db: Session, data: MedicineCreate):
+    nuevo = create_medicine(db, data)
+    if nuevo is None:
+        raise HTTPException(
+            status_code=400,
+            detail="El medicamento ya existe en la base de datos."
+        )
+    return nuevo

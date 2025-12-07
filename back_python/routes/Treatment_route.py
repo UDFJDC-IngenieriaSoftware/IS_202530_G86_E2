@@ -42,7 +42,3 @@ def delete_treatment_route(id_treatment: str,service: Treatment_service = Depend
     if not success:
         raise HTTPException(status_code=404, detail="treatment not found")
     return {"message": "treatment deleted successfully"}
-
-
-
-

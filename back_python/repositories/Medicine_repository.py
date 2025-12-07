@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 from model.Medicine import Medicamento
+from schemas.Medicine_schema import MedicineCreate
 
 def get_all_medicines(db: Session):
     return db.query(Medicamento).all()
@@ -7,11 +8,21 @@ def get_all_medicines(db: Session):
 def get_medicine_by_id(db: Session, medicine_id: int):
     return db.query(Medicamento).filter(Medicamento.idMedicamento == medicine_id).first()
 
-def create_medicine(db: Session, data):
+def get_medicine_by_name(db: Session, nombre: str):
+    return db.query(Medicamento).filter(Medicamento.nombreMedicamento.ilike(nombre)).first()
+
+def create_medicine(db: Session, data: MedicineCreate):
+
+    # Verificar si ya existe
+    existente = get_medicine_by_name(db, data.nombreMedicamento)
+    if existente:
+        return None  # lo manejamos en el servicio
+
     nuevo = Medicamento(
         nombreMedicamento=data.nombreMedicamento,
         observaciones=data.observaciones
     )
+
     db.add(nuevo)
     db.commit()
     db.refresh(nuevo)
