@@ -1,10 +1,14 @@
 from fastapi import FastAPI
-from routes.Medicine_route import router as medicine_router
-from routes.Reminder_route import router as reminder_router
-from config.database import Base, engine
-from model.Medicine import Medicine  # y los demás modelos
+from sqlalchemy import text
+from db.database import get_db
+from model import Carer, Patient, Carer_Patient, Treatment 
 
-Base.metadata.create_all(bind=engine)
+from routes.Carer_route import router as carer_router
+from routes.Patient_route import router as patient_route
+from routes.Treatment_route import router as treatment_route
+
+
+
 
 
 app = FastAPI()
@@ -14,3 +18,15 @@ app.include_router(reminder_router)
 @app.get("/")
 def read_root():
     return {"message": "prueba WhatsPills?"}
+
+
+
+
+
+
+
+
+
+app.include_router(carer_router)
+app.include_router(patient_route)
+app.include_router(treatment_route)
