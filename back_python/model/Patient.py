@@ -1,7 +1,6 @@
 from sqlalchemy import Date, Column, String, Integer, CheckConstraint
 from sqlalchemy.orm import declarative_base,relationship
-
-Base = declarative_base()
+from db.database import Base
 
 
 class Patient(Base):
@@ -9,17 +8,27 @@ class Patient(Base):
     __tablename__='paciente'
 
     cedula = Column('cedula',Integer,primary_key=True,index=True)
-    name = Column('primerNombre ',String,nullable=False)
-    second_name = Column('segundoNombre ',String,nullable=True)
-    first_lastname = Column('primerApellido ',String,nullable=False)
-    second_lastname = Column('segundoApellido ',String,nullable=True)
-    phone = Column('telefono ',Integer,nullable=False)
-    date_of_birth =Column('fechaNacimiento ',Date)
+    name = Column('primernombre',String,nullable=False)
+    second_name = Column('segundonombre',String,nullable=True)
+    first_lastname = Column('primerapellido',String,nullable=False)
+    second_lastname = Column('segundoapellido',String,nullable=True)
+    phone = Column('telefono',Integer,nullable=False)
+    date_of_birth =Column('fechanacimiento',Date)
 
-    carers = relationship('Carer_Patient', back_populates="patients")
+    carer_patients = relationship("Carer_Patient", back_populates="patient")
+    treatments = relationship("Treatment", back_populates="patient")
+
+    carers = relationship(
+        "Carer",#ria
+        secondary="cuidador_paciente",
+        primaryjoin="Patient.cedula == Carer_Patient.cedula_patient",
+        secondaryjoin="Carer.cedula == Carer_Patient.cedula_carer",
+        viewonly=True
+    )
+
 
     __table_args__=(
-        CheckConstraint('(fechaNacimiento  < CURRENT_DATE', name='check_fecha_nacimiento')
+        CheckConstraint('fechanacimiento  < CURRENT_DATE', name='check_fecha_nacimiento'),
 
     )
 
@@ -34,9 +43,9 @@ class Patient(Base):
            "first_lastname":self.first_lastname,
            "second_lastname":self.second_lastname,
            "phone":self.phone,
-           "date_of_birth":self.date_of_birth,
-           "carers": self.carers,
-           "treatments":self.treatments
+           "date_of_birth":self.date_of_birth
+     
+           
 
 
         }    

@@ -1,16 +1,22 @@
 from datetime import datetime
 from pydantic import BaseModel
+from datetime import date
 
 class TreatmentBase(BaseModel):
-    id_treatment:str
+    
+    cedula_patient:int
     name: str
-    especialty: str
-    end_date: str
-    start_date: str
+    especiality: str
+    
+    start_date: date
+    end_date: date
 
 class TreatmentCreate(TreatmentBase):
     pass
 
 class TreatmentResponse(TreatmentBase):
-    pass
+    id_treatment: int
+
+    class Config:
+        from_attributes = True
 

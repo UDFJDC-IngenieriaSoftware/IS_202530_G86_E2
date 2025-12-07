@@ -1,60 +1,31 @@
+from repositories.Treatment_repository import TreatmentRepository
+
 from model.Treatment import Treatment
 
-fake_db = []
-
-def create_treatment(data):
-
-    new_treatment = Treatment(
-        id_treatment=data.id_treatment,
-        name=data.name,
-        
-        especialty=data.especialty,
-        end_date=data.end_date,
-        start_date=data.start_date,
-       
-    )
-
-   
-    #script agregar cuidadores
-    fake_db.append(new_treatment)
-
-    return new_treatment
-
-def get_all_treatment_by_id(id_treatment):
 
 
+class Treatment_service:
 
-    #se implementará los scripts para recibir los tratamientos por id del usuario
-    return fake_db
+    def __init__(self, repo: TreatmentRepository):
+        self.repo= repo
 
-def get_treatment_by_id(id_treatment):
-    for treatment in fake_db:
-         #se implementará la función para encontrar el cuidador
-        if treatment.id_treatment == id_treatment:
-            return treatment
-
-
-
-def update_treatment(id_treatment,data):
-
-    treatment = get_treatment_by_id(id_treatment)
-
-    if not treatment:
-        return None
+    def create_treatment(self,data):
+        treatment= Treatment(**data)
+        return self.repo.create(treatment)
     
-    treatment.name=data.name
-    treatment.especialty=data.especialty
-    treatment.end_date=data.end_date
-    treatment.start_date=data.start_date
-    
+    def get_all_treatment(self):
+        return self.repo.get_all()
 
-    return treatment
 
-def delete_treatment(id_treatment):
+    def get_treatment_by_id(self,id_):
+        return self.repo.get_by_id(id_)    
 
-    for treatment in fake_db:
-        if treatment.id_treatment == id_treatment:
-            fake_db.remove(treatment)
-            return True
-    return False    
-    
+
+
+    def update_treatment(self,id_,data):
+
+        return self.repo.update(id_,data)
+
+    def delete_treatment(self,id_):
+        self.repo.delete(id_)
+        return 'eliminado correctamente '    

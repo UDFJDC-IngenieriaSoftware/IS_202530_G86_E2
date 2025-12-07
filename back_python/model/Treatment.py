@@ -1,24 +1,22 @@
 from sqlalchemy import ForeignKey,Date, Column, String, Integer, CheckConstraint
 from sqlalchemy.orm import declarative_base,relationship
-
-Base = declarative_base()
-
+from db.database import Base
 
 class Treatment(Base):
 
     __tablename__='tratamiento'
 
 
-    id_treatment =Column('idTratamiento',Integer,primary_key=True,index=True,autoincrement=True)
-    cedulaPaciente = Column(Integer, ForeignKey('paciente.cedula'), nullable=False)
-    name = Column('nombreTratamiento',String,nullable=False)
-    especialty = Column('especialidad',String,nullable=False)
-    start_date =Column('fechaInicio',Date)
-    end_date = Column('fechaInicio',Date)
+    id_treatment =Column('idtratamiento',Integer,primary_key=True,index=True,autoincrement=True)
+    cedula_patient = Column('cedulapaciente',Integer, ForeignKey('paciente.cedula'), nullable=False)
+    name = Column('nombretratamiento',String,nullable=False)
+    especiality = Column('especialidad',String,nullable=False)
+    start_date =Column('fechainicio',Date)
+    end_date = Column('fechafin',Date)
 
     __table_args__ = (
-        CheckConstraint('fechaInicio < CURRENT_DATE', name='check_fecha_inicio'),
-        CheckConstraint('fechaFin > fechaInicio AND fechaFin <= CURRENT_DATE', name='check_fecha_fin'),
+        CheckConstraint('fechainicio < CURRENT_DATE', name='check_fecha_inicio'),
+        CheckConstraint('fechafin > fechainicio AND fechafin <= CURRENT_DATE', name='check_fecha_fin'),
     )
     
     patient = relationship("Patient", back_populates="treatments")
@@ -28,8 +26,9 @@ class Treatment(Base):
 
         return {
             "id_treatment":self.id_treatment,
+            "cedula_patient": self.cedula_patient,
             "name": self.name,
-            "especialty": self.especialty,
+            "especiality": self.especiality,
             "end_date": self.end_date,
             "start_date": self.start_date
 
