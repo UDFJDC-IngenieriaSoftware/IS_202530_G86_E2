@@ -1,0 +1,13 @@
+# Ignorar entornos virtuales
+venv/
+.venv/
+env/
+.env
+
+# Ignorar archivos de caché de Python
+__pycache__/
+*.pyc
+
+# Ignorar archivos específicos de sistemas operativos
+.DS_Store # (macOS)
+thumbs.db # (Windows)
