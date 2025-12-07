@@ -1,45 +1,23 @@
 from sqlalchemy.orm import Session
-from model.Medicine import Medicine
-from schemas.Medicine_schema import MedicineCreate
+from repositories.Medicine_repository import (
+    get_all_medicines,
+    get_medicine_by_id,
+    create_medicine,
+    update_medicine,
+    delete_medicine
+)
 
-# CREATE
-def create_medicine(db: Session, data: MedicineCreate):
-    new_medicine = Medicine(
-        nombreMedicamento=data.nombreMedicamento,
-        observaciones=data.observaciones
-    )
-    db.add(new_medicine)
-    db.commit()
-    db.refresh(new_medicine)
-    return new_medicine
+def service_get_all(db: Session):
+    return get_all_medicines(db)
 
-# READ ALL
-def get_all_medicines(db: Session):
-    return db.query(Medicine).all()
+def service_get_by_id(db: Session, medicine_id: int):
+    return get_medicine_by_id(db, medicine_id)
 
-# READ ONE
-def get_medicine_by_id(db: Session, medicine_id: int):
-    return db.query(Medicine).filter(Medicine.idMedicamento == medicine_id).first()
+def service_create(db: Session, data):
+    return create_medicine(db, data)
 
-# UPDATE
-def update_medicine(db: Session, medicine_id: int, data: MedicineCreate):
-    medicine = get_medicine_by_id(db, medicine_id)
-    if not medicine:
-        return None
+def service_update(db: Session, medicine_id: int, data):
+    return update_medicine(db, medicine_id, data)
 
-    medicine.nombreMedicamento = data.nombreMedicamento
-    medicine.observaciones = data.observaciones
-
-    db.commit()
-    db.refresh(medicine)
-    return medicine
-
-# DELETE
-def delete_medicine(db: Session, medicine_id: int):
-    medicine = get_medicine_by_id(db, medicine_id)
-    if not medicine:
-        return None
-
-    db.delete(medicine)
-    db.commit()
-    return True
+def service_delete(db: Session, medicine_id: int):
+    return delete_medicine(db, medicine_id)

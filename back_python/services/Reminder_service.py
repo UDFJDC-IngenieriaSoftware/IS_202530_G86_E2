@@ -1,55 +1,23 @@
 from sqlalchemy.orm import Session
-from model.Reminder import Reminder
-from schemas.Reminder_schema import ReminderCreate
+from repositories.Reminder_repository import (
+    get_all_reminders,
+    get_reminder_by_id,
+    create_reminder,
+    update_reminder,
+    delete_reminder
+)
 
+def service_get_all(db: Session):
+    return get_all_reminders(db)
 
-def create_reminder(db: Session, data: ReminderCreate):
-    reminder = Reminder(
-        idMedicamento=data.idMedicamento,
-        idTratamiento=data.idTratamiento,
-        estadoEnvio=data.estadoEnvio,
-        respuestaPaciente=data.respuestaPaciente,
-        fechaEnvioRecordatorio=data.fechaEnvioRecordatorio,
-        fechaRespuesta=data.fechaRespuesta,
-        notas=data.notas
-    )
-    db.add(reminder)
-    db.commit()
-    db.refresh(reminder)
-    return reminder
+def service_get_by_id(db: Session, reminder_id: int):
+    return get_reminder_by_id(db, reminder_id)
 
+def service_create(db: Session, data):
+    return create_reminder(db, data)
 
-def get_all_reminders(db: Session):
-    return db.query(Reminder).all()
+def service_update(db: Session, reminder_id: int, data):
+    return update_reminder(db, reminder_id, data)
 
-
-def get_reminder_by_id(db: Session, reminder_id: int):
-    return db.query(Reminder).filter(Reminder.idRecordatorio == reminder_id).first()
-
-
-def update_reminder(db: Session, reminder_id: int, data: ReminderCreate):
-    reminder = get_reminder_by_id(db, reminder_id)
-
-    if not reminder:
-        return None
-
-    reminder.idMedicamento = data.idMedicamento
-    reminder.idTratamiento = data.idTratamiento
-    reminder.estadoEnvio = data.estadoEnvio
-    reminder.respuestaPaciente = data.respuestaPaciente
-    reminder.fechaEnvioRecordatorio = data.fechaEnvioRecordatorio
-    reminder.fechaRespuesta = data.fechaRespuesta
-    reminder.notas = data.notas
-
-    db.commit()
-    db.refresh(reminder)
-    return reminder
-
-
-def delete_reminder(db: Session, reminder_id: int):
-    reminder = get_reminder_by_id(db, reminder_id)
-    if not reminder:
-        return None
-    db.delete(reminder)
-    db.commit()
-    return True
+def service_delete(db: Session, reminder_id: int):
+    return delete_reminder(db, reminder_id)

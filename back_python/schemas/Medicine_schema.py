@@ -4,11 +4,13 @@ class MedicineBase(BaseModel):
     nombreMedicamento: str
     observaciones: str | None = None
 
+
 class MedicineCreate(MedicineBase):
     pass
+
 
 class MedicineResponse(MedicineBase):
     idMedicamento: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True

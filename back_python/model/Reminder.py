@@ -1,33 +1,31 @@
-from sqlalchemy import Column, Integer, String, TIMESTAMP, Enum, ForeignKey
-from config.database import Base
+from sqlalchemy import Column, Integer, String, TIMESTAMP, ForeignKey, Enum
+from sqlalchemy.orm import relationship
+from db.database import Base
 import enum
 
-
-class EstadoEnvioEnum(enum.Enum):
+# Enums alineados con PostgreSQL
+class EstadoEnvioEnum(str, enum.Enum):
     Pendiente = "Pendiente"
     Enviado = "Enviado"
-    Error_al_enviar = "Error al enviar"
+    Error = "Error al enviar"
 
-
-class RespuestaPacienteEnum(enum.Enum):
+class RespuestaPacienteEnum(str, enum.Enum):
     Confirmado = "Confirmado"
-    Sin_respuesta = "Sin respuesta"
+    SinRespuesta = "Sin respuesta"
 
-
-class Reminder(Base):
+class Recordatorio(Base):
     __tablename__ = "recordatorio"
 
-    idRecordatorio = Column(Integer, primary_key=True, autoincrement=True)
-    idMedicamento = Column(Integer, ForeignKey("medicamento.idMedicamento"))
-    idTratamiento = Column(Integer, ForeignKey("tratamiento.idTratamiento"))
+    idRecordatorio = Column("idrecordatorio", Integer, primary_key=True, index=True)
+    idMedicamento = Column("idmedicamento", Integer, ForeignKey("medicamento.idmedicamento"))
+    idTratamiento = Column("idtratamiento", Integer, ForeignKey("tratamiento.idtratamiento"))
 
-    estadoEnvio = Column(Enum(EstadoEnvioEnum), nullable=False)
-    respuestaPaciente = Column(Enum(RespuestaPacienteEnum), nullable=False)
+    estadoEnvio = Column("estadoenvio", Enum(EstadoEnvioEnum), nullable=False)
+    respuestaPaciente = Column("respuestapaciente", Enum(RespuestaPacienteEnum), nullable=False)
 
-    fechaEnvioRecordatorio = Column(TIMESTAMP, nullable=False)
-    fechaRespuesta = Column(TIMESTAMP, nullable=False)
-
-    notas = Column(String(200), nullable=True)
+    fechaEnvioRecordatorio = Column("fechaenviorecordatorio", TIMESTAMP, nullable=False)
+    fechaRespuesta = Column("fecharespuesta", TIMESTAMP, nullable=True)
+    notas = Column("notas", String(200), nullable=True)
 
     def to_dict(self):
         return {
