@@ -20,7 +20,7 @@ def create_treatment_route(data:TreatmentCreate,service: Treatment_service = Dep
 @router.get("/}",response_model=list[TreatmentResponse])
 def list_treatments_route(service: Treatment_service = Depends(get_service)):
 
-    return [p.to_dict() for p in service.get_all_treatment_by_id()]
+    return [p.to_dict() for p in service.get_all_treatment()]
 
 @router.get("/{id_treatment}",response_model=TreatmentResponse)
 def get_treatment_route(id_treatment:str,service: Treatment_service = Depends(get_service)):
