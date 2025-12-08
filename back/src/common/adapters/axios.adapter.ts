@@ -8,8 +8,7 @@ export class AxiosAdapter implements HttpAdapter {
 
     private readonly logger = new Logger('HttpAdapter');
     private axios: AxiosInstance = axios;
-
-    async post<T>(url: string, data: TextPayloadInterface, options: options): Promise<T> {
+    async postWhatsapp<T>(url: string, data: TextPayloadInterface, options: options): Promise<T> {
 
         const payload = {
             messaging_product: "whatsapp",
@@ -39,7 +38,7 @@ export class AxiosAdapter implements HttpAdapter {
     }
 
 
-    async get<T>(url: string, options: options): Promise<T> {
+    async getWhatsapp<T>(url: string, options: options): Promise<T> {
 
         try {
             const { data } = await this.axios.get(url, {
@@ -52,10 +51,20 @@ export class AxiosAdapter implements HttpAdapter {
             return data;
 
         } catch (error: any) {
-            console.error("❌ AxiosAdapter GET Error:", error.response?.data || error);
+            console.error("AxiosAdapter GET Error:", error.response?.data || error);
             throw new InternalServerErrorException("Error en petición GET a WhatsApp API");
         }
 
+    }
+
+    async get<T>(url:string){
+        try {
+            const {data} = await this.axios.get(url)
+            return data;
+        } catch (error) {
+            this.logger.error;
+            throw new InternalServerErrorException(`Error en el AxiosAdapter, detalles:${error}`)
+        }
     }
 
 }

@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AxiosAdapter } from 'src/common/adapters/axios.adapter';
 import { TextPayloadInterface } from './interfaces.ts/textPayload.interface';
@@ -12,7 +12,7 @@ import { States } from './interfaces.ts/states.enum';
 export class WhatsappService {
 
     private state: States = States.START;
-
+    public readonly logger = new Logger()
     constructor(
         private readonly http: AxiosAdapter,
         private readonly configService: ConfigService,
@@ -31,7 +31,7 @@ export class WhatsappService {
     async sendMessage(to: string, message: string) {
         const url = `https://graph.facebook.com/v22.0/${this.phoneId}/messages`;
         const data: TextPayloadInterface = { to, message };
-        return await this.http.post(url, data, this.headersData);
+        return await this.http.postWhatsapp(url, data, this.headersData);
     }
 
     /** Maneja TODO mensaje entrante — texto, imagen, lo que llegue */
@@ -63,8 +63,27 @@ export class WhatsappService {
     /** Procesa mensajes de texto según estado del usuario / lógica de bot */
     private async handleTextMessage(from: string, text: string) {
         
+
         //Validar que usuario exista en la base de datos si no existe, registraro y el estado pasa a register
-        // const user = await this.http.get()
+        try {
+            const user = await this.http.get(`http://127.0.0.1:8000/patient/${from}`)
+            if(!user){
+                await this.sendMessage(from, `
+                    Bienvenido, hemos buscado y al parecer no se encuentra registado, 
+                    por favor indiquenos la siguiente información:
+                    \n
+                    Primer nombre: \n
+                    Segundo nombre (Si aplica): \n
+                    Primer apellido: \n
+                    Segundo apellido: \n
+                    `)
+                this.state = States.REGISTER_NAME
+            }
+        } catch (error) {
+            this.logger.error
+            throw new InternalServerErrorException(error)
+        }
+        
         this.state = States.REGISTER_NAME
 
 
@@ -88,7 +107,7 @@ export class WhatsappService {
         const metaUrl = `https://graph.facebook.com/v22.0/${fileId}`;
 
         try {
-        const imageUrl: ImageUrlInfo = await this.http.get(metaUrl, this.headersData);
+        const imageUrl: ImageUrlInfo = await this.http.getWhatsapp(metaUrl, this.headersData);
 
         const downloadResponse = await axios.get(imageUrl.url, {
             responseType: "arraybuffer",
