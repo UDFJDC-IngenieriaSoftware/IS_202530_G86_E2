@@ -17,11 +17,14 @@ class Patient_repository:
     def get_all(self):
         return self.db.query(Patient).all()
 
-    def get_by_id(self, cedula_:int):
+    def get_by_id(self, cedula_:str):
         return self.db.query(Patient).filter(Patient.cedula == cedula_).first()
+    
+    def get_by_telefono(self, telefono_:str):
+        return self.db.query(Patient).filter(Patient.phone == telefono_).first()
 
 
-    def update(self,cedula_:int,data:dict):
+    def update(self,cedula_:str,data:dict):
         patient = self.get_by_id(cedula_)
         if not patient:
             return None
@@ -31,7 +34,7 @@ class Patient_repository:
         self.db.refresh(patient)
         return patient
 
-    def delete(self,cedula_:int):
+    def delete(self,cedula_:str):
         patient = self.get_by_id(cedula_)
         if patient:
             self.db.delete(patient)

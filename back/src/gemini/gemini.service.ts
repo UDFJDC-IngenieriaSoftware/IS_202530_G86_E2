@@ -70,7 +70,6 @@ export class GeminiService {
             });
             const text: string = result.candidates[0].content.parts[0].text;
             const dataJson = JSON.parse(text.replace(/```json/gi, '').replace(/```/g, '').trim());
-            console.log(dataJson);
             return dataJson;
         }
 

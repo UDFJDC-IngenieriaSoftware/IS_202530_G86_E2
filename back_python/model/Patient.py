@@ -7,12 +7,12 @@ class Patient(Base):
 
     __tablename__='paciente'
 
-    cedula = Column('cedula',Integer,primary_key=True,index=True)
+    cedula = Column('cedula',String,primary_key=True,index=True)
     name = Column('primernombre',String,nullable=False)
     second_name = Column('segundonombre',String,nullable=True)
     first_lastname = Column('primerapellido',String,nullable=False)
     second_lastname = Column('segundoapellido',String,nullable=True)
-    phone = Column('telefono',Integer,nullable=False)
+    phone = Column('telefono',String,nullable=False, unique=True)
     date_of_birth =Column('fechanacimiento',Date)
 
     carer_patients = relationship("Carer_Patient", back_populates="patient")

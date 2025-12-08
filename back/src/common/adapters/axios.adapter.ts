@@ -4,54 +4,56 @@ import { Injectable, InternalServerErrorException, Logger } from "@nestjs/common
 import { TextPayloadInterface } from "src/whatsapp/interfaces.ts/textPayload.interface";
 
 @Injectable()
-export class AxiosAdapter implements HttpAdapter{
+export class AxiosAdapter implements HttpAdapter {
 
     private readonly logger = new Logger('HttpAdapter');
+    private axios: AxiosInstance = axios;
 
-
-
-    
     async post<T>(url: string, data: TextPayloadInterface, options: options): Promise<T> {
 
         const payload = {
-            "messaging_product": "whatsapp",    
-            "recipient_type": "individual",
-            "to": data.to,
-            "type": "text",
-            "text": {
-                "preview_url": false,
-                "body": data.message
+            messaging_product: "whatsapp",
+            recipient_type: "individual",
+            to: data.to,
+            type: "text",
+            text: {
+                preview_url: false,
+                body: data.message
             }
-        }
-
+        };
 
         try {
-            const {data} = await this.axios.post(url, payload, {
-                headers:{
-                    Authorization: options.headers.authorization,
-                    "Content-Type": options.headers.content_type
+            const { data: result } = await this.axios.post(url, payload, {
+                headers: {
+                    Authorization: options.headers.Authorization,
+                    "Content-Type": options.headers["Content-Type"],
                 }
             });
-            return data;
-        } catch (error) {
-            console.log(this.logger.error);
-            throw new InternalServerErrorException(this.logger.error)
+
+            return result;
+
+        } catch (error: any) {
+            console.error("❌ AxiosAdapter POST Error:", error.response?.data || error);
+            throw new InternalServerErrorException("Error enviando mensaje a WhatsApp API");
         }
     }
-    private axios: AxiosInstance = axios;
+
 
     async get<T>(url: string, options: options): Promise<T> {
 
         try {
-            const {data} = await this.axios.get( url,{
-                headers:{
-                    Authorization: options.headers.authorization,
-                    "Content-Type": options.headers.content_type
+            const { data } = await this.axios.get(url, {
+                headers: {
+                    Authorization: options.headers.Authorization,
+                    "Content-Type": options.headers["Content-Type"]
                 }
             });
+
             return data;
-        } catch (error) {
-            throw new Error('This is an error - Check logs');
+
+        } catch (error: any) {
+            console.error("❌ AxiosAdapter GET Error:", error.response?.data || error);
+            throw new InternalServerErrorException("Error en petición GET a WhatsApp API");
         }
 
     }

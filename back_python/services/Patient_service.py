@@ -18,7 +18,9 @@ class Patient_service:
 
     def get_patient_by_cedula(self,cedula_):
         return self.repo.get_by_id(cedula_)    
-
+    
+    def get_patient_by_Telefono(self, telefono_):
+        return self.repo.get_by_telefono(telefono_)
 
 
     def update_patient(self,cedula_,data):

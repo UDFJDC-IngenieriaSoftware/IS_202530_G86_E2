@@ -8,7 +8,7 @@ class Treatment(Base):
 
 
     id_treatment =Column('idtratamiento',Integer,primary_key=True,index=True,autoincrement=True)
-    cedula_patient = Column('cedulapaciente',Integer, ForeignKey('paciente.cedula'), nullable=False)
+    cedula_patient = Column('cedulapaciente',String, ForeignKey('paciente.cedula'), nullable=False)
     name = Column('nombretratamiento',String,nullable=False)
     especiality = Column('especialidad',String,nullable=False)
     start_date =Column('fechainicio',Date)

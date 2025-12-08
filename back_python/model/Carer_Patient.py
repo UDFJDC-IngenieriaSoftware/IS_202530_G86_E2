@@ -1,4 +1,4 @@
-from sqlalchemy import Table, Column, Integer, String, Date, ForeignKey, CheckConstraint
+from sqlalchemy import Table, Column, String, Date, ForeignKey, CheckConstraint
 
 from sqlalchemy.orm import relationship,declarative_base
 from datetime import date
@@ -12,8 +12,8 @@ class Carer_Patient(Base):
     __tablename__='cuidador_paciente'
     
     
-    cedula_patient=Column('cedulapaciente', Integer, ForeignKey('paciente.cedula'), primary_key=True)
-    cedula_carer=Column('cedulacuidador', Integer, ForeignKey('cuidador.cedula'), primary_key=True)
+    cedula_patient=Column('cedulapaciente', String, ForeignKey('paciente.cedula'), primary_key=True)
+    cedula_carer=Column('cedulacuidador', String, ForeignKey('cuidador.cedula'), primary_key=True)
     date_asign=Column('fechaasignacion', Date)
     relation_type=Column('relacion', String, nullable=True)
     

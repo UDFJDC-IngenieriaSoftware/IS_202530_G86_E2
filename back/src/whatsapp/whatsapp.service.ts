@@ -1,86 +1,110 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AxiosAdapter } from 'src/common/adapters/axios.adapter';
 import { TextPayloadInterface } from './interfaces.ts/textPayload.interface';
-import { ImageUrlInfo, Message, WhatsappResponse } from './interfaces.ts/WsResponse.interface';
+import { ImageUrlInfo, MessageText, WhatsappResponse } from './interfaces.ts/WsResponse.interface';
 import { options } from 'src/common/interfaces.ts/HttpAdapter.interface';
 import { ImagesService } from 'src/images/images.service';
 import axios from 'axios';
-
+import { States } from './interfaces.ts/states.enum';
 
 @Injectable()
 export class WhatsappService {
-    
-    
-    
+
+    private state: States = States.START;
+
     constructor(
-        private readonly http: AxiosAdapter,   
+        private readonly http: AxiosAdapter,
         private readonly configService: ConfigService,
-        private readonly ImageService: ImagesService
+        private readonly ImageService: ImagesService,  // Puedes inyectar también un “UserService” para manejar BD
+    ) {}
 
-
-    ){}
     private readonly headersData: options = {
         headers: {
-                authorization: `Bearer ${process.env.WHATSAPP_API_KEY}`,
-                content_type: 'application/json'
-                }
-    }
-    
-    private readonly phoneId = '951070524747774'; // tu phone number ID
+        Authorization: `Bearer ${process.env.WHATSAPP_API_KEY}`,
+        "Content-Type": "application/json",
+        },
+    };
 
-    async sendMessage(to: string, message: string){
+    private readonly phoneId = '951070524747774';
+
+    async sendMessage(to: string, message: string) {
         const url = `https://graph.facebook.com/v22.0/${this.phoneId}/messages`;
-
-        const data: TextPayloadInterface= {
-            to,
-            message
-        }
-        
+        const data: TextPayloadInterface = { to, message };
         return await this.http.post(url, data, this.headersData);
     }
 
-
-    async getImage(body: WhatsappResponse){
-        // Validar estructura mínima
+    /** Maneja TODO mensaje entrante — texto, imagen, lo que llegue */
+    async handleIncomingMessage(body: WhatsappResponse) {
+        console.log(JSON.stringify(body,null, 2));
         const entry = body.entry?.[0];
         const change = entry?.changes?.[0];
         const value = change?.value;
 
-        if (!value?.messages || value.messages.length === 0) {
-                console.log("No hay mensajes en este webhook. Posiblemente es un status, ack o evento distinto.");
-                return;
-            }
+        const message = value?.messages?.[0];
+        const from = value?.contacts?.[0]?.wa_id;
 
-            const data = value.messages[0];
+        if (!message || !from) {
+        console.log("Ignorando evento sin mensaje válido.");
+        return;
+        }
 
-            if (data.type !== "image" || !data.image?.id) {
-                console.log("El mensaje recibido NO es una imagen");
-                return;
-            }
+        if (message.type === 'text') {
+            const messageText = message as MessageText;
+            const text = messageText.text.body.trim();
+            await this.handleTextMessage(from, text);
+        } else if (message.type === 'image') {
+            await this.handleImageMessage(from, message);
+        } else {
+            console.log("Tipo de mensaje no manejado:", message.type);
+        }
+    }
 
-            const phoneNumber = value.contacts?.[0]?.wa_id;
-            if (!phoneNumber) {
-                console.log("No se encontró el número del usuario");
-                return;
-            }
-        //Contruir url para obtener la url de la imagen
-        let url = `https://graph.facebook.com/v22.0/${data.image.id}`
-        const imageUrl: ImageUrlInfo = await this.http.get(url, this.headersData)
+    /** Procesa mensajes de texto según estado del usuario / lógica de bot */
+    private async handleTextMessage(from: string, text: string) {
+        
+        //Validar que usuario exista en la base de datos si no existe, registraro y el estado pasa a register
+        // const user = await this.http.get()
+        this.state = States.REGISTER_NAME
 
-        //Reusar la variable para la url real de la imagen
-        url = imageUrl.url
 
-        const response = await axios.get(url, {
+        // 🚨 Aquí debes integrar tu lógica de usuarios:
+        // Ej: const user = await this.userService.getOrCreate(from);
+        // switch(user.state) { ... } etc.
+
+        // Por ahora un simple ejemplo de respuesta:
+        await this.sendMessage(from, `Me dijiste: "${text}". Gracias por tu mensaje 😊`);
+    }
+
+    /** Procesa mensajes de tipo imagen */
+    private async handleImageMessage(from: string, msg: any) {
+        const image = msg.image;
+        if (!image?.id) {
+        await this.sendMessage(from, "No se encontró la imagen correctamente.");
+        return;
+        }
+
+        const fileId = image.id;
+        const metaUrl = `https://graph.facebook.com/v22.0/${fileId}`;
+
+        try {
+        const imageUrl: ImageUrlInfo = await this.http.get(metaUrl, this.headersData);
+
+        const downloadResponse = await axios.get(imageUrl.url, {
             responseType: "arraybuffer",
             headers: {
-                Authorization: `Bearer ${this.configService.get('WHATSAPP_API_KEY')}`
-            }
+            Authorization: `Bearer ${this.configService.get('WHATSAPP_API_KEY')}`,
+            },
         });
-        const buffer: Buffer = response.data
+
+        const buffer = downloadResponse.data;
+
         const textToSend = await this.ImageService.getTextToSend(buffer);
-        const result = await this.sendMessage(phoneNumber, textToSend);
-        console.log(result);
-        return 0;
+
+        await this.sendMessage(from, textToSend);
+        } catch (error: any) {
+        console.error("❌ Error al procesar imagen:", error.response?.data || error);
+        await this.sendMessage(from, "Lo siento, hubo un error procesando la imagen.");
+        }
     }
 }

@@ -4,7 +4,7 @@ from datetime import date
 
 class TreatmentBase(BaseModel):
     
-    cedula_patient:int
+    cedula_patient:str
     name: str
     especiality: str
     

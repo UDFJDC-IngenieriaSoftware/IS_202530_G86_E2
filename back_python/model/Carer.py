@@ -1,4 +1,4 @@
-from sqlalchemy import  Column, String, Integer, CheckConstraint
+from sqlalchemy import  Column, String, CheckConstraint
 from sqlalchemy.orm import declarative_base,relationship
 
 from db.database import Base
@@ -10,17 +10,17 @@ class Carer(Base):
     __tablename__= "cuidador"
 
 
-    cedula = Column('cedula',Integer,primary_key=True,index=True)
+    cedula = Column('cedula',String,primary_key=True,index=True)
     name = Column('primernombre', String,nullable=False)
     second_name = Column('segundonombre',String,nullable=True)
     first_lastname = Column('primerapellido',String,nullable=False)
     second_lastname = Column('segundoapellido',String,nullable=True)
-    phone = Column('telefono',Integer,nullable=False)
+    phone = Column('telefono',String,nullable=False)
 
         # el carer debe poder agregar pacientes
     __table_args__=(
 
-        CheckConstraint('telefono > 0',name='check_telefono'),
+        CheckConstraint("telefono ~ '^[0-9]+$'", name='check_telefono'),
 
     )
 

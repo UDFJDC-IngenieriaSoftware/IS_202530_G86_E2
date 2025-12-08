@@ -29,7 +29,7 @@ export class WhatsappController {
   // POST: recepción de mensajes
   @Post()
   receiveMessage(@Body() body: any) {
-    this.whatsappService.getImage(body);
+    this.whatsappService.handleIncomingMessage(body);
     return { status: 'received' };
   }
   

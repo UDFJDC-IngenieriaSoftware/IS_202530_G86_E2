@@ -17,11 +17,11 @@ class Carer_repository:
     def get_all(self):
         return self.db.query(Carer).all()
 
-    def get_by_id(self, cedula_:int):
+    def get_by_id(self, cedula_:str):
         return self.db.query(Carer).filter(Carer.cedula == cedula_).first()
 
 
-    def update(self,cedula_:int,data:dict):
+    def update(self,cedula_:str,data:dict):
         carer = self.get_by_id(cedula_)
         if not carer:
             return None
@@ -31,7 +31,7 @@ class Carer_repository:
         self.db.refresh(carer)
         return carer
 
-    def delete(self,cedula_:int):
+    def delete(self,cedula_:str):
         carer = self.get_by_id(cedula_)
         if carer:
             self.db.delete(carer)

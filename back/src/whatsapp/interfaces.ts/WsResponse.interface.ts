@@ -17,7 +17,7 @@ export interface Value {
     messaging_product: string;
     metadata:          Metadata;
     contacts:          Contact[];
-    messages:          Message[];
+    messages:          MessageText[] | MessageImage[];
 }
 
 export interface Contact {
@@ -29,7 +29,7 @@ export interface Profile {
     name: string;
 }
 
-export interface Message {
+export interface MessageImage {
     from:      string;
     id:        string;
     timestamp: string;
@@ -57,3 +57,15 @@ export interface ImageUrlInfo{
   id: string,
   messaging_product: string
 }
+
+export interface MessageText {
+    from:      string;
+    id:        string;
+    timestamp: string;
+    text:      Text;
+    type:      string;
+}
+export interface Text {
+    body: string;
+}
+

@@ -3,12 +3,12 @@ from pydantic import BaseModel
 
 class PatientBase(BaseModel):
 
-    cedula: int
+    cedula: str
     name: str
     second_name: str | None = None
     first_lastname: str
     second_lastname: str
-    phone: int
+    phone: str
     date_of_birth: datetime
 
 class PatientCreate(PatientBase):

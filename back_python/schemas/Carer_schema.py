@@ -3,21 +3,21 @@ from pydantic import BaseModel
 
 class CarerCreate(BaseModel):
     #es necesario que se ingrese la cedula para crear
-    cedula: int
+    cedula: str
     name: str
     second_name: str | None = None
     first_lastname: str
     second_lastname: str
-    phone: int
+    phone: str
 
 
 class CarerResponse(BaseModel):
-    cedula: int
+    cedula: str
     name: str
     second_name: str | None = None
     first_lastname: str
     second_lastname: str
-    phone: int
+    phone: str
 
     model_config = {
         "from_attributes": True
