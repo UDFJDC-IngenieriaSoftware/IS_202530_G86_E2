@@ -21,6 +21,14 @@ export class WhatsappService {
         private readonly ImageService: ImagesService,  // Puedes inyectar también un “UserService” para manejar BD
     ) {}
 
+    // Helper function: allow only safe URL path segment chars
+    private sanitizePathSegment(segment: string): string {
+        if (typeof segment !== "string" || !/^[a-zA-Z0-9-_]+$/.test(segment)) {
+            throw new InternalServerErrorException(`Invalid path segment: ${segment}`);
+        }
+        return segment;
+    }
+
     private readonly headersData: options = {
         headers: {
         Authorization: `Bearer ${process.env.WHATSAPP_API_KEY}`,
@@ -188,7 +196,8 @@ export class WhatsappService {
                 return 'Esperar denuevo la inscripcion de la notificacion';
             }
             arrayData[7] = validatePresentation;
-            const user: UserInterface = await this.http.get<UserInterface>(`${this.configService.get('URL_PATIENT')}${from}`)
+            const safeFrom = this.sanitizePathSegment(from);
+            const user: UserInterface = await this.http.get<UserInterface>(`${this.configService.get('URL_PATIENT')}${safeFrom}`)
                 
             const toJsonData: TreatementInterface = {
                 cedula: user.cedula, 
@@ -322,8 +331,12 @@ export class WhatsappService {
         //Consultar que el medicamento exista
         const {nombreMedicamento,concentracion,presentacion, ...Data} = body;
         console.log(Data)
-        console.log(`${this.configService.get('URL_MEDICINE')}${nombreMedicamento}/${concentracion}/${presentacion}`)
-        let medicine = await this.http.get(`${this.configService.get('URL_MEDICINE')}${nombreMedicamento}/${concentracion}/${presentacion}`);
+        // Sanitize each user-provided segment before building URL
+        const safeNombreMedicamento = this.sanitizePathSegment(nombreMedicamento);
+        const safeConcentracion = this.sanitizePathSegment(concentracion);
+        const safePresentacion = this.sanitizePathSegment(presentacion);
+        console.log(`${this.configService.get('URL_MEDICINE')}${safeNombreMedicamento}/${safeConcentracion}/${safePresentacion}`)
+        let medicine = await this.http.get(`${this.configService.get('URL_MEDICINE')}${safeNombreMedicamento}/${safeConcentracion}/${safePresentacion}`);
         //Si no se encuentra, se crea la nueva medicina
         if(medicine.status === 404){
             const medicamento = {
@@ -332,7 +345,7 @@ export class WhatsappService {
                 concentracion
             }
             await this.http.post(`${this.configService.get('URL_MEDICINE')}`, medicamento)
-            medicine = await this.http.get(`${this.configService.get('URL_MEDICINE')}${nombreMedicamento}/${concentracion}/${presentacion}`);
+            medicine = await this.http.get(`${this.configService.get('URL_MEDICINE')}${safeNombreMedicamento}/${safeConcentracion}/${safePresentacion}`);
         }   
         //crear tratamiento y recordatorio
         const tratamiento = {
