@@ -2,7 +2,9 @@ from pydantic import BaseModel
 
 class MedicineBase(BaseModel):
     nombreMedicamento: str
-    observaciones: str | None = None
+    presentacion: str
+    concentracion: str 
+
 
 
 class MedicineCreate(MedicineBase):

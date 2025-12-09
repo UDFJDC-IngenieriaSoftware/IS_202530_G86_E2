@@ -5,22 +5,29 @@ from schemas.Medicine_schema import MedicineCreate
 def get_all_medicines(db: Session):
     return db.query(Medicamento).all()
 
-def get_medicine_by_id(db: Session, medicine_id: int):
-    return db.query(Medicamento).filter(Medicamento.idMedicamento == medicine_id).first()
-
-def get_medicine_by_name(db: Session, nombre: str):
-    return db.query(Medicamento).filter(Medicamento.nombreMedicamento.ilike(nombre)).first()
-
+def get_medicine_by_name(db: Session, medicine_name: str, concentracion: str, presentacion: str):
+    return db.query(Medicamento).filter(
+        (Medicamento.nombreMedicamento == medicine_name)
+        & (Medicamento.concentracion == concentracion) 
+        & (Medicamento.presentacion == presentacion)
+        ).first()
+    
+def get_medicine_by_id(db: Session, medicine_id:int):
+    return db.query(Medicamento).filter(
+        Medicamento.idMedicamento == medicine_id
+    ).first()
+    
 def create_medicine(db: Session, data: MedicineCreate):
 
     # Verificar si ya existe
-    existente = get_medicine_by_name(db, data.nombreMedicamento)
+    existente = get_medicine_by_name(db, data.nombreMedicamento, data.concentracion, data.presentacion)
     if existente:
         return None  # lo manejamos en el servicio
 
     nuevo = Medicamento(
         nombreMedicamento=data.nombreMedicamento,
-        observaciones=data.observaciones
+        presentacion=data.presentacion,
+        concentracion=data.concentracion
     )
 
     db.add(nuevo)

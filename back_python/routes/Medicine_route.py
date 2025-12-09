@@ -5,10 +5,11 @@ from db.database import get_db
 from schemas.Medicine_schema import MedicineCreate, MedicineResponse
 from services.Medicine_service import (
     service_get_all,
-    service_get_by_id,
+    service_get_by_name,
     service_create,
     service_update,
-    service_delete
+    service_delete,
+    service_get_by_id
 )
 
 router = APIRouter(prefix="/medicines", tags=["Medicines"])
@@ -16,6 +17,13 @@ router = APIRouter(prefix="/medicines", tags=["Medicines"])
 @router.get("/", response_model=list[MedicineResponse])
 def list_all(db: Session = Depends(get_db)):
     return service_get_all(db)
+
+@router.get("/{medicine_name}/{concentracion}/{presentacion}", response_model=MedicineResponse)
+def get_by_name(medicine_name: str, concentracion: str, presentacion: str,db: Session = Depends(get_db)):
+    med = service_get_by_name(db, medicine_name, concentracion, presentacion)
+    if not med:
+        raise HTTPException(404, "Medicine not found")
+    return med
 
 @router.get("/{medicine_id}", response_model=MedicineResponse)
 def get_by_id(medicine_id: int, db: Session = Depends(get_db)):

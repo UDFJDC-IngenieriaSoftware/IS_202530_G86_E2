@@ -1,7 +1,8 @@
 import axios, { AxiosInstance } from "axios";
 import { HttpAdapter, options } from "../interfaces.ts/HttpAdapter.interface";
-import { Injectable, InternalServerErrorException, Logger } from "@nestjs/common";
+import { BadRequestException, Injectable, InternalServerErrorException, Logger } from "@nestjs/common";
 import { TextPayloadInterface } from "src/whatsapp/interfaces.ts/textPayload.interface";
+import { stat } from "fs";
 
 @Injectable()
 export class AxiosAdapter implements HttpAdapter {
@@ -32,7 +33,7 @@ export class AxiosAdapter implements HttpAdapter {
             return result;
 
         } catch (error: any) {
-            console.error("❌ AxiosAdapter POST Error:", error.response?.data || error);
+            console.error("AxiosAdapter POST Error:", error.response?.data || error);
             throw new InternalServerErrorException("Error enviando mensaje a WhatsApp API");
         }
     }
@@ -59,12 +60,48 @@ export class AxiosAdapter implements HttpAdapter {
 
     async get<T>(url:string){
         try {
-            const {data} = await this.axios.get(url)
-            return data;
+            const Req = await this.axios.get(url)
+            return Req.data;    
         } catch (error) {
-            this.logger.error;
-            throw new InternalServerErrorException(`Error en el AxiosAdapter, detalles:${error}`)
+            return this.handlerErrors(error)
         }
     }
+
+    async post(url: string, body:object) {
+        try {
+            const result = await this.axios.post(url, body);
+            return result;
+        } catch (error) {
+            return this.handlerErrors(error)
+        }
+    }
+
+    put(url: string, body: object) {
+        try {
+            const result = this.axios.put(url,body)
+            return result;
+        } catch (error) {
+        this.handlerErrors(error);       
+        }
+    }
+
+    private handlerErrors(error){
+        this.logger.error(error)
+        if(error.response.status === 404){
+            return {
+                status: 404
+            }
+        }if(error.response.status === 422){
+            return {
+                status: 422
+            }
+        }if(error.response.status === 500){
+            return{
+                status: 500
+            }
+        }
+    }
+
+
 
 }

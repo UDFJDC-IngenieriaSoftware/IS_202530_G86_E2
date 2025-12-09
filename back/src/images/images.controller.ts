@@ -5,10 +5,14 @@ import { diskStorage } from 'multer';
 import { FileNamer } from './helpers/fileNamer.helper';
 import { FileFilter } from './helpers/fileFilter.helper';
 import  { Response } from 'express';
+import { AxiosAdapter } from 'src/common/adapters/axios.adapter';
 
 @Controller('images')
 export class ImagesController {
-  constructor(private readonly imagesService: ImagesService) {}
+  constructor(
+    private readonly imagesService: ImagesService,
+    private readonly http: AxiosAdapter
+  ) {}
 
 
   @Post('sendPhoto')
@@ -25,7 +29,6 @@ export class ImagesController {
   ){
     return this.imagesService.getJsonWithBuffer(file.buffer)
   }
-
   
 
 }

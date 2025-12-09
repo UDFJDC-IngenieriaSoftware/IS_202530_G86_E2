@@ -13,6 +13,7 @@ def create_reminder(db: Session, data):
         idTratamiento=data.idTratamiento,
         estadoEnvio=data.estadoEnvio,
         respuestaPaciente=data.respuestaPaciente,
+        minutosFaltantes=data.minutosFaltantes,
         fechaEnvioRecordatorio=data.fechaEnvioRecordatorio,
         fechaRespuesta=data.fechaRespuesta,
         notas=data.notas
@@ -32,6 +33,7 @@ def update_reminder(db: Session, reminder_id: int, data):
     reminder.estadoEnvio = data.estadoEnvio
     reminder.respuestaPaciente = data.respuestaPaciente
     reminder.fechaEnvioRecordatorio = data.fechaEnvioRecordatorio
+    reminder.minutosFaltantes = data.minutosFaltantes
     reminder.fechaRespuesta = data.fechaRespuesta
     reminder.notas = data.notas
 

@@ -9,8 +9,15 @@ class TreatmentRepository:
     def get_all(self):
         return self.db.query(Treatment).all()
 
+    def get_by_data(self, nombre: str, cedula: str):
+        return self.db.query(Treatment).filter(
+            (Treatment.name == nombre) &
+            (Treatment.cedula_patient == cedula)
+            ).first()
     def get_by_id(self, id_: int):
-        return self.db.query(Treatment).filter(Treatment.id_treatment == id_).first()
+        return self.db.query(Treatment).filter(
+            (Treatment.id_treatment == id_)
+        ).first()
 
     def create(self, treatment: Treatment):
         self.db.add(treatment)

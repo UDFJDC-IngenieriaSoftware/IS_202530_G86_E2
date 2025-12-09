@@ -6,11 +6,13 @@ class Medicamento(Base):
 
     idMedicamento = Column("idmedicamento", Integer, primary_key=True, index=True)
     nombreMedicamento = Column("nombremedicamento", String(100), nullable=False)
-    observaciones = Column("observaciones", String(200), nullable=True)
+    presentacion = Column("presentacion", String(50), nullable=False)
+    concentracion = Column("concentracion", String(50), nullable=False)
 
     def to_dict(self):
         return {
             "idMedicamento": self.idMedicamento,
             "nombreMedicamento": self.nombreMedicamento,
-            "observaciones": self.observaciones
+            "presentacion": self.presentacion,
+            "concentracion": self.concentracion
         }

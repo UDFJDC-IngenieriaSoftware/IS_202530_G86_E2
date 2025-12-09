@@ -17,9 +17,11 @@ class Treatment_service:
         return self.repo.get_all()
 
 
-    def get_treatment_by_id(self,id_):
-        return self.repo.get_by_id(id_)    
+    def get_treatment_by_data(self,nombre, cedula):
+        return self.repo.get_by_data(nombre,)    
 
+    def get_treatment_by_id(self,id):
+        return self.repo.get_by_id(id)    
 
 
     def update_treatment(self,id_,data):

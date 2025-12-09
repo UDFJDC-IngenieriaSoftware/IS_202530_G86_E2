@@ -7,9 +7,10 @@ class TreatmentBase(BaseModel):
     cedula_patient:str
     name: str
     especiality: str
-    
-    start_date: date
-    end_date: date
+    dose: str
+    frequence: int
+    start_date: datetime
+    end_date: datetime
 
 class TreatmentCreate(TreatmentBase):
     pass

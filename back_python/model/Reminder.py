@@ -22,7 +22,7 @@ class Recordatorio(Base):
 
     estadoEnvio = Column("estadoenvio", Enum(EstadoEnvioEnum), nullable=False)
     respuestaPaciente = Column("respuestapaciente", Enum(RespuestaPacienteEnum), nullable=False)
-
+    minutosFaltantes = Column("minutosFaltantes", Integer, nullable=False)
     fechaEnvioRecordatorio = Column("fechaenviorecordatorio", TIMESTAMP, nullable=False)
     fechaRespuesta = Column("fecharespuesta", TIMESTAMP, nullable=True)
     notas = Column("notas", String(200), nullable=True)
@@ -36,5 +36,6 @@ class Recordatorio(Base):
             "respuestaPaciente": self.respuestaPaciente.value,
             "fechaEnvioRecordatorio": str(self.fechaEnvioRecordatorio),
             "fechaRespuesta": str(self.fechaRespuesta),
+            "minutosFaltantes": Integer(self.minutosFaltantes),
             "notas": self.notas,
         }

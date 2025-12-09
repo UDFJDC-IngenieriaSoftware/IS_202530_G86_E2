@@ -1,8 +1,8 @@
-"""init
+"""initial schema
 
-Revision ID: 20beca6f4878
+Revision ID: d136910fcc25
 Revises: 
-Create Date: 2025-12-07 21:09:09.013648
+Create Date: 2025-12-08 18:39:23.670375
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '20beca6f4878'
+revision: str = 'd136910fcc25'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -28,13 +28,15 @@ def upgrade() -> None:
     sa.Column('primerapellido', sa.String(), nullable=False),
     sa.Column('segundoapellido', sa.String(), nullable=True),
     sa.Column('telefono', sa.String(), nullable=False),
+    sa.CheckConstraint("telefono ~ '^[0-9]+$'", name='check_telefono'),
     sa.PrimaryKeyConstraint('cedula')
     )
     op.create_index(op.f('ix_cuidador_cedula'), 'cuidador', ['cedula'], unique=False)
     op.create_table('medicamento',
     sa.Column('idmedicamento', sa.Integer(), nullable=False),
     sa.Column('nombremedicamento', sa.String(length=100), nullable=False),
-    sa.Column('observaciones', sa.String(length=200), nullable=True),
+    sa.Column('presentacion', sa.String(length=50), nullable=False),
+    sa.Column('concentracion', sa.String(length=50), nullable=False),
     sa.PrimaryKeyConstraint('idmedicamento')
     )
     op.create_index(op.f('ix_medicamento_idmedicamento'), 'medicamento', ['idmedicamento'], unique=False)
@@ -46,8 +48,9 @@ def upgrade() -> None:
     sa.Column('segundoapellido', sa.String(), nullable=True),
     sa.Column('telefono', sa.String(), nullable=False),
     sa.Column('fechanacimiento', sa.Date(), nullable=True),
-    sa.CheckConstraint('fechanacimiento  < CURRENT_DATE', name='check_fecha_nacimiento'),
-    sa.PrimaryKeyConstraint('cedula')
+    sa.CheckConstraint('fechanacimiento < CURRENT_DATE', name='check_fecha_nacimiento'),
+    sa.PrimaryKeyConstraint('cedula'),
+    sa.UniqueConstraint('telefono')
     )
     op.create_index(op.f('ix_paciente_cedula'), 'paciente', ['cedula'], unique=False)
     op.create_table('cuidador_paciente',
@@ -64,11 +67,13 @@ def upgrade() -> None:
     sa.Column('idtratamiento', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('cedulapaciente', sa.String(), nullable=False),
     sa.Column('nombretratamiento', sa.String(), nullable=False),
+    sa.Column('dosis', sa.String(), nullable=False),
+    sa.Column('frecuencia', sa.Integer(), nullable=False),
     sa.Column('especialidad', sa.String(), nullable=False),
     sa.Column('fechainicio', sa.Date(), nullable=True),
     sa.Column('fechafin', sa.Date(), nullable=True),
-    sa.CheckConstraint('fechafin > fechainicio AND fechafin <= CURRENT_DATE', name='check_fecha_fin'),
-    sa.CheckConstraint('fechainicio < CURRENT_DATE', name='check_fecha_inicio'),
+    sa.CheckConstraint('fechafin > CURRENT_DATE', name='check_fecha_fin_futura'),
+    sa.CheckConstraint('fechainicio <= fechafin', name='check_fecha_inicio_fin'),
     sa.ForeignKeyConstraint(['cedulapaciente'], ['paciente.cedula'], ),
     sa.PrimaryKeyConstraint('idtratamiento')
     )
@@ -79,6 +84,7 @@ def upgrade() -> None:
     sa.Column('idtratamiento', sa.Integer(), nullable=True),
     sa.Column('estadoenvio', sa.Enum('Pendiente', 'Enviado', 'Error', name='estadoenvioenum'), nullable=False),
     sa.Column('respuestapaciente', sa.Enum('Confirmado', 'SinRespuesta', name='respuestapacienteenum'), nullable=False),
+    sa.Column('minutosFaltantes', sa.Integer(), nullable=False),
     sa.Column('fechaenviorecordatorio', sa.TIMESTAMP(), nullable=False),
     sa.Column('fecharespuesta', sa.TIMESTAMP(), nullable=True),
     sa.Column('notas', sa.String(length=200), nullable=True),

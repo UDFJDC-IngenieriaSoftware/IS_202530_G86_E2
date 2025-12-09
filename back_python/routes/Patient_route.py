@@ -22,11 +22,15 @@ def list_patients_route(service: Patient_service = Depends(get_service)):
 
     return [p.to_dict() for p in service.get_all_patient()]
 
+
+
 @router.get("/{telefono}",response_model=PatientResponse)
 def get_patient_route(telefono:str,service: Patient_service = Depends(get_service)):
     patient = service.get_patient_by_Telefono(telefono)
     if not patient:
-        raise HTTPException(status_code=404,detail="patient not found")
+        patient = service.get_patient_by_cedula(telefono)
+        if not patient:
+            raise HTTPException(status_code=404,detail="patient not found")
     return patient.to_dict( )
 
 @router.put("/{cedula}", response_model=PatientResponse)

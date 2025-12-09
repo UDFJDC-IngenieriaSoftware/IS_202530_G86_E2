@@ -28,7 +28,7 @@ class Patient(Base):
 
 
     __table_args__=(
-        CheckConstraint('fechanacimiento  < CURRENT_DATE', name='check_fecha_nacimiento'),
+        CheckConstraint('fechanacimiento < CURRENT_DATE', name='check_fecha_nacimiento'),
 
     )
 

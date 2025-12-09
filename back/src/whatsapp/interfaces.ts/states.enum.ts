@@ -3,13 +3,16 @@ export enum States {
   START = "START",
 
   // Proceso de registro
-  REGISTER_NAME = "REGISTER_NAME",           // Esperando que el usuario envíe su nombre
-  REGISTER_DOCUMENT = "REGISTER_DOCUMENT",   // Esperando número de documento
+  REGISTER_USER = "REGISTER_USER",           // Esperando que el usuario envíe su nombre
   REGISTER_CONFIRM = "REGISTER_CONFIRM",     // Confirmar datos ingresados
 
   // Usuario ya registrado (menú principal)
   MENU = "MENU",                             // Menú principal
   MENU_WAITING_OPTION = "MENU_WAITING_OPTION",
+  CREATE_CARER = "CREATING_CARER",
+  CREATE_MANUALLY_NOTIFICATION= "CREATING_MANUALLY_NOTIFICATION",
+  CREATE_NOTIFICATION= "CREATING_NOTIFICATION",
+  EDIT_DELETE_NOTIFICATION = "EDIT_DELETE_NOTIFICACTION",
 
   // Enviar recetas
   RECIPE_CHOOSE_METHOD = "RECIPE_CHOOSE_METHOD", // Elegir si enviar imagen o manual

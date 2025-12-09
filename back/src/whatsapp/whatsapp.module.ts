@@ -12,6 +12,9 @@ import { ImagesModule } from 'src/images/images.module';
     CommonModule,
     ConfigModule,
     ImagesModule
+  ],
+  exports:[
+    WhatsappService
   ]
 })
 export class WhatsappModule {}

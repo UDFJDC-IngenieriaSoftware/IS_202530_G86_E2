@@ -8,6 +8,7 @@ class ReminderBase(BaseModel):
     estadoEnvio: EstadoEnvioEnum
     respuestaPaciente: RespuestaPacienteEnum
     fechaEnvioRecordatorio: datetime
+    minutosFaltantes: int
     fechaRespuesta: datetime | None = None
     notas: str | None = None
 
