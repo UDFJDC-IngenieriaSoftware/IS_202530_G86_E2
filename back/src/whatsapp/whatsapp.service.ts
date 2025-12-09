@@ -236,6 +236,11 @@ export class WhatsappService {
         }
 
         const fileId = image.id;
+        // SSRF mitigation: Allow only alphanumeric IDs with _, ., or - characters (as allowed by FB Graph IDs)
+        if (!/^[A-Za-z0-9_.-]+$/.test(fileId)) {
+            await this.sendMessage(from, "ID de imagen no válido.");
+            return;
+        }
         const metaUrl = `https://graph.facebook.com/v22.0/${fileId}`;
 
         try {
