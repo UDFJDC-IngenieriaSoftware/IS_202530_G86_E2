@@ -227,6 +227,10 @@ export class WhatsappService {
         }
 
         const fileId = image.id;
+        // SSRF mitigation: Only allow safe fileId values (UUIDs or Facebook IDs)
+        if (!/^[a-zA-Z0-9_-]{10,}$/.test(fileId)) {
+           throw new InternalServerErrorException("Invalid fileId format for Meta Graph API");
+        }
         const metaUrl = `https://graph.facebook.com/v22.0/${fileId}`;
 
         try {
