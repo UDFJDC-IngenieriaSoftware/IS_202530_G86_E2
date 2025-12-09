@@ -18,7 +18,7 @@ export class NotificationsService {
     ){}
 
     
-    @Cron(CronExpression.EVERY_MINUTE)
+    @Cron(CronExpression.EVERY_5_MINUTES)
     async comprobarNotifiacion(){
 
         //Consultar en la base de datos las notifiaciones

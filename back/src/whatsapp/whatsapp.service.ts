@@ -122,12 +122,13 @@ export class WhatsappService {
             this.state != States.CREATE_NOTIFICATION &&
             this.state != States.EDIT_DELETE_NOTIFICATION
             )
-        if(noWaitingOption){
+        const user = await this.http.get(`${this.configService.get('URL_PATIENT')}${from}`)
+        if(noWaitingOption && user ){
             this.state = States.MENU
         }
         //Si existe enviar opciones, 
         if(this.state === States.MENU){
-            const user = await this.http.get(`${this.configService.get('URL_PATIENT')}${from}`)
+            
             let text: string = `*Bienvenido a Whatspills* ${user.name} por favor seleccione una de las siguientes opciones para continuar:\n`;
             text += "*1* Registrar Cuidador\n";
             text += "*2* Crear notificacion manualmente\n";
@@ -213,7 +214,7 @@ export class WhatsappService {
             await this.createNotificationManual(from, toJsonData)
         }
 
-        
+        return;
     }
 
     /** Procesa mensajes de tipo imagen */
@@ -247,7 +248,7 @@ export class WhatsappService {
             await this.sendMessage(from, `Se detecto un documento de identificacion distinto, se realizaron los cambios correspondientes`)
         }
         await this.sendMessage(from, text);
-        
+
         
         console.log(dataJson);
         return json;

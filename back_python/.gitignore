@@ -3,7 +3,7 @@ venv/
 .venv/
 env/
 .env
-
+.alembic.ini
 # Ignorar archivos de caché de Python
 __pycache__/
 *.pyc

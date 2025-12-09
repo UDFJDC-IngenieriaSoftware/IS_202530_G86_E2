@@ -1,7 +1,8 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { finalization } from 'process';
 import { GeminiService } from 'src/gemini/gemini.service';
-import { EstadoEnvio, EstadoRespuesta, presentacion } from 'src/whatsapp/interfaces.ts/user.interface';
+import { EstadoEnvio, EstadoRespuesta, presentacion, TreatementInterface } from 'src/whatsapp/interfaces.ts/user.interface';
+import { RecetaInterface } from './interfaces/recetaBase.interface';
 
 @Injectable()
 export class ImagesService {
@@ -14,60 +15,13 @@ export class ImagesService {
         return await this.geminiService.getJsonFromDataImageBuffer(buffer);
     }
 
-    async getTextToSend(buffer: Buffer, cedula: string): Promise<{text: string, json: {
-        receta:
-        {paciente:{
-                nombre: string,
-                identificacion:string 
-            },
-            medico: {
-                nombre: string
-            },
-            fecha: Date,
-            medicamentos: [
-                {
-                nombre: string,
-                dosis: string,
-                frecuencia: string,
-                duracion: Date
-                }
-            ],
-            notas: string,
-        },
-        faltantes:{
-            treatmentMissing: {
-            cedula: string,
-            nombreTratamiento: string,
-            especialidad: string,
-            fechaInicio: Date,
-            fechaFin: Date,
-            nombreMedicamento: string,
-            dosis: string,
-            concentracion: string,
-            presentacion: presentacion,
-            frecuencia: number,
-            reminder: {
-                idRecordatorio?: number,
-                idTratamiento?: number,
-                idMedicamento?: number,
-                minutosFaltantes: number,
-                notas: string,
-                estadoEnvio: EstadoEnvio,
-                respuestaPaciente: EstadoRespuesta,
-                fechaEnvioRecordatorio: Date,
-                fechaRespuesta: Date,
-                }
-            }
-        }
-
-        
-        }}> {
+    async getTextToSend(buffer: Buffer, cedula: string): Promise<{text: string, json: {receta: RecetaInterface, faltantes:{treatmentMissing: TreatementInterface} }}> {
         const data =  await this.geminiService.getJsonFromDataImageBuffer(buffer);
         let text = `*📄 Resultado de la receta médica OCR*\n\n`;
 
         text += `*Paciente*\n${data.receta.paciente.nombre}\n${cedula}\n\n`;
         text += `*Médico*\n${data.receta.medico.nombre}\n\n`;
-        text += `*Fecha*: ${data.receta.fecha}\n\n`;
+        text += `*Fecha*: ${data.receta.fechaInicio}\n\n`;
         text += `*Medicamentos:*\n`;
 
         data.receta.medicamentos.forEach((m, i) => {

@@ -29,6 +29,7 @@ export class WhatsappController {
   // POST: recepción de mensajes
   @Post()
   receiveMessage(@Body() body: any) {
+    console.log("funciona");
     this.whatsappService.handleIncomingMessage(body);
     return { status: 'received' };
   }
