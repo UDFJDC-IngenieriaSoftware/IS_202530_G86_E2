@@ -1,4 +1,5 @@
 import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import escapeHtml from 'escape-html';
 import { WhatsappService } from './whatsapp.service';
 import { ConfigService } from '@nestjs/config';
 
@@ -19,7 +20,7 @@ export class WhatsappController {
 
     if (mode === 'subscribe' && token === this.configService.get('NGROK_KEY')) {
       console.log('Webhook verificado correctamente');
-      return challenge; // Meta necesita que devolvamos esto
+      return escapeHtml(challenge); // Meta necesita que devolvamos esto (escaped)
     }
 
     console.log('Error de verificación: token inválido');
